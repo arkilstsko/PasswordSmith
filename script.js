@@ -1,45 +1,70 @@
-function generate() {
-  const input = document.getElementById("userInput").value.trim();
-  const output = document.getElementById("output");
-  const bar = document.getElementById("strengthBar");
+// Kryptografisk tilfældighed
+function randInt(max){ // 0..max-1
+  const a = new Uint32Array(1);
+  crypto.getRandomValues(a);
+  return a[0] % max;
+}
+function pick(arr){ return arr[randInt(arr.length)]; }
 
-  if (!input) {
-    output.textContent = "";
-    bar.style.width = "0%";
-    return;
-  }
+// Lille, neutral, indbygget ordpulje (ingen ekstern liste)
+const WORDS = [
+  "Blå","Fjord","Korn","Pixel","Havn","Granit","Signal","Trekant","Atlas","Delta",
+  "Kaffe","Trappe","Vinkel","Model","Nøgle","Gran","Måne","Sti","Bølge","Nord",
+  "Lyn","Skærm","Motor","Fyr","Svale","Tempo","Stjerne","Kode","Anker","Glas"
+];
+const SYMBOLS = ["!", "?", "#", "@", "%", "&"];
 
-  // Enkel transformation
-  let result = input
-    .replace(/a/gi, "@")
-    .replace(/s/gi, "$")
-    .replace(/e/gi, "3")
-    .replace(/i/gi, "!")
-    .replace(/o/gi, "0");
+// UI refs
+const out = document.getElementById("output");
+const bar = document.getElementById("bar");
+const lbl = document.getElementById("strengthText");
+const btnGen = document.getElementById("generateBtn");
+const btnCopy = document.getElementById("copyBtn");
+const btnToggle = document.getElementById("toggleBtn");
+document.getElementById("year").textContent = new Date().getFullYear();
 
-  result = result.charAt(0).toUpperCase() + result.slice(1);
-  result += Math.floor(Math.random() * 90 + 10) + "#";
+// Generator: 3 ord + 2 cifre + symbol (nemt at huske, stærkt i længde)
+function generate(){
+  const words = [pick(WORDS), pick(WORDS), pick(WORDS)];
+  let pass = words.join("-");
+  const digits = String(10 + randInt(90)); // 10..99
+  pass += digits + pick(SYMBOLS);
+  setOutput(pass);
+  updateMeter(pass);
+}
 
-  output.textContent = result;
+function setOutput(v){
+  out.value = v;
+}
 
-  // Bedøm styrke
+function copy(){
+  if(!out.value) return;
+  navigator.clipboard.writeText(out.value);
+  const old = btnCopy.textContent;
+  btnCopy.textContent = "Kopieret ✔";
+  setTimeout(()=> btnCopy.textContent = old, 1200);
+}
+
+function toggle(){
+  const isPwd = out.type === "password";
+  out.type = isPwd ? "text" : "password";
+  btnToggle.textContent = isPwd ? "Skjul" : "Vis";
+}
+
+// Enkel styrkeindikator: længde + variation → procent og label
+function updateMeter(pw){
   let score = 0;
-  if (result.length > 10) score++;
-  if (/[A-Z]/.test(result)) score++;
-  if (/[0-9]/.test(result)) score++;
-  if (/[^A-Za-z0-9]/.test(result)) score++;
-
-  const widths = ["25%", "50%", "75%", "100%"];
-  const colors = ["#ff4d4d", "#ffb84d", "#88ff4d", "#00e676"];
-  bar.style.width = widths[score - 1] || "25%";
-  bar.style.background = colors[score - 1] || "#ff4d4d";
+  if(pw.length >= 14) score++;
+  if(/[A-Z]/.test(pw)) score++;
+  if(/[0-9]/.test(pw)) score++;
+  if(/[^A-Za-z0-9]/.test(pw)) score++;
+  const widths = ["20%","45%","70%","100%"];
+  bar.style.width = widths[score] || "20%";
+  const labels = ["Meget svag","Svag","OK","Stærk","Meget stærk"];
+  lbl.textContent = "Styrke: " + (labels[score] || labels[0]);
 }
 
-function copyResult() {
-  const text = document.getElementById("output").textContent;
-  if (!text) return;
-  navigator.clipboard.writeText(text);
-  const btn = document.getElementById("copyBtn");
-  btn.textContent = "Kopieret ✔";
-  setTimeout(() => (btn.textContent = "Kopiér adgangskode"), 1500);
-}
+// Events
+btnGen.addEventListener("click", generate);
+btnCopy.addEventListener("click", copy);
+btnToggle.addEventListener("click", toggle);
