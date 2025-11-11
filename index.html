@@ -3,108 +3,53 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>PasswordSmith | Stærke og huskbare adgangskoder</title>
-  <meta name="description" content="Lav en stærk og huskbar adgangskode lokalt i din browser. Intet sendes eller gemmes.">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <title>PasswordSmith | Nem og stærk adgangskode</title>
+  <meta name="description" content="Lav en stærk og huskbar adgangskode – alt kører lokalt i din browser.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
-  <!-- zxcvbn til evidensbaseret styrkeestimat (client-side) -->
-  <script defer src="https://unpkg.com/zxcvbn@4.4.2/dist/zxcvbn.js"></script>
   <script defer src="script.js"></script>
 </head>
 <body>
-  <div class="hero">
-    <div class="overlay"></div>
-
-    <header class="site-header">
-      <div class="brand">
-        <div class="logo">🔐</div>
-        <div class="brand-text">PasswordSmith</div>
+  <main class="wrap">
+    <header class="header">
+      <div class="logo">
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <defs>
+            <linearGradient id="g" x1="0" x2="1">
+              <stop offset="0" stop-color="#0aa2ff"/><stop offset="1" stop-color="#5be0ff"/>
+            </linearGradient>
+          </defs>
+          <rect x="6" y="12" width="36" height="28" rx="6" fill="url(#g)" opacity="0.2"/>
+          <path d="M16 22v-4a8 8 0 1 1 16 0v4" fill="none" stroke="url(#g)" stroke-width="3" stroke-linecap="round"/>
+          <rect x="12" y="22" width="24" height="16" rx="4" fill="none" stroke="url(#g)" stroke-width="3"/>
+        </svg>
+        <span>PasswordSmith</span>
       </div>
-      <nav class="nav">
-        <a href="#how" class="nav-link">Hvorfor dette virker</a>
-        <a href="#privacy" class="nav-link">Privatliv</a>
-        <a href="https://fidoalliance.org/passkeys/" target="_blank" rel="noopener" class="cta-link">Passkeys</a>
-      </nav>
     </header>
 
-    <main class="container">
-      <h1>Stærke adgangskoder – nemme at huske</h1>
-      <p class="tagline">Alt kører lokalt i din browser. Intet sendes eller gemmes.</p>
+    <section class="card">
+      <h1><span class="title-gradient">Stærk adgangskode</span></h1>
+      <p class="subtitle">Alt kører lokalt i din browser. Intet gemmes eller sendes.</p>
 
-      <section class="card">
-        <!-- Mode toggle -->
-        <div class="mode-row">
-          <label class="mode">
-            <input type="radio" name="mode" value="passphrase" checked>
-            <span>Generér passphrase</span>
-          </label>
-          <label class="mode">
-            <input type="radio" name="mode" value="transform">
-            <span>Forbedr min indtastning</span>
-          </label>
-        </div>
-
-        <!-- Inputs -->
-        <div id="passphraseControls" class="controls">
-          <div class="control">
-            <label>Antal ord</label>
-            <div class="inline">
-              <input type="range" id="wordsCount" min="3" max="6" value="4">
-              <span id="wordsCountLabel">4</span>
-            </div>
-          </div>
-
-          <div class="control">
-            <label>Separator</label>
-            <select id="separator">
-              <option value=" ">Mellemrum</option>
-              <option value="-">Bindestreg (-)</option>
-              <option value=".">Punktum (.)</option>
-              <option value="_">Underscore (_)</option>
-            </select>
-          </div>
-
-          <div class="check-row">
-            <label class="check"><input type="checkbox" id="addDigits" checked> Tilføj 2–3 tilfældige tal</label>
-            <label class="check"><input type="checkbox" id="addSymbol"> Tilføj et symbol til sidst</label>
-            <label class="check"><input type="checkbox" id="capitalizeWords" checked> Stor begyndelsesbogstav</label>
-          </div>
-        </div>
-
-        <div id="transformControls" class="controls hidden">
-          <div class="control">
-            <label>Din tekst (forbedres lokalt – intet gemmes)</label>
-            <input id="userInput" class="input" type="text" placeholder="fx stephen123 eller dit yndlingsord">
-          </div>
-          <div class="check-row">
-            <label class="check"><input type="checkbox" id="smartLengthen" checked> Forlæng frem for leetspeak</label>
-            <label class="check"><input type="checkbox" id="minimalLeet"> Minimal leetspeak (a→@, e→3)</label>
-          </div>
-        </div>
-
-        <!-- Actions -->
-        <div class="actions">
-          <button id="generateBtn" class="btn primary">Generér sikker adgangskode</button>
-          <button id="copyBtn" class="btn ghost">Kopiér</button>
+      <div class="output-row">
+        <input id="output" type="password" readonly placeholder="Tryk ‘Generér’ for at starte" aria-label="Genereret adgangskode">
+        <div class="btn-row">
+          <button id="generateBtn" class="btn primary">Generér</button>
+          <button id="copyBtn" class="btn ghost" aria-live="polite">Kopiér</button>
           <button id="toggleBtn" class="btn ghost">Vis</button>
         </div>
+      </div>
 
-        <!-- Output -->
-        <div class="output-wrap">
-          <input id="output" class="output" type="password" readonly placeholder="Din adgangskode vises her …">
-        </div>
+      <div class="meter" aria-hidden="true"><span id="bar"></span></div>
+      <p id="strengthText" class="strength">Styrke: —</p>
 
-        <!-- Strength -->
-        <div class="strength">
-          <div class="strength-bar"><span id="strengthBar"></span></div>
-          <div class="strength-row">
-            <span id="strengthLabel">Styrke: —</span>
-            <span id="feedback" class="feedback"></span>
-          </div>
-        </div>
+      <p class="note">Tip: 3 ord + tal/symbol er ofte både stærkt og nemt at huske.</p>
+    </section>
 
-        <!-- Privacy badge -->
-        <div class="privacy-badge">Lokalt • Ingen tracking • Ingen lagring</div>
-      </section>
-
-      <!-- Why se
+    <footer class="footer">
+      <span>© <span id="year"></span> SecurePass</span>
+      <span>Lav et unikt kodeord pr. site + aktivér 2FA</span>
+    </footer>
+  </main>
+</body>
+</html>
