@@ -3,24 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PasswordSmith | Lav en stærk adgangskode</title>
+  <title>SecurePass | Lav en stærk adgangskode</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="container">
-    <h1>PasswordSmith</h1>
-    <p class="subtitle">Lav en stærk og huskbar adgangskode – helt privat og sikkert.</p>
+  <div class="hero">
+    <div class="overlay"></div>
+    <div class="container">
+      <h1>SecurePass</h1>
+      <p class="tagline">Lav en stærk og huskbar adgangskode – uden at noget bliver gemt.</p>
 
-    <div class="card">
-      <input id="userInput" type="password" placeholder="Indtast din adgangskode...">
-      <button onclick="generate()">Gør den sikker</button>
-      <div id="strengthBar"></div>
-      <p id="output" class="output"></p>
-      <button id="copyBtn" onclick="copyResult()">Kopiér</button>
+      <div class="card">
+        <input id="userInput" type="password" placeholder="Indtast din adgangskode...">
+        <button onclick="generate()">Gør den sikker</button>
+
+        <div id="strengthContainer">
+          <div id="strengthBar"></div>
+        </div>
+
+        <p id="output" class="output"></p>
+        <button id="copyBtn" class="secondary" onclick="copyResult()">Kopiér adgangskode</button>
+      </div>
+
+      <p class="privacy">Alt behandles lokalt i din browser – intet bliver sendt eller gemt.</p>
     </div>
-
-    <p class="privacy">Alt kører direkte i din browser. Intet bliver gemt eller sendt.</p>
   </div>
   <script src="script.js"></script>
 </body>
